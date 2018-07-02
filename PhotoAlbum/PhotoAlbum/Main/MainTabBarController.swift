@@ -18,7 +18,7 @@ class MainTabBarController: UITabBarController {
             return
         }
         
-        let cvc = UIViewController()
+        let cvc = CollectionViewController()
         let lvc = UIViewController()
         
         cvc.tabBarItem = MainTabBarItem(title: "collectionView", image: collectionIcon, tag: 1)

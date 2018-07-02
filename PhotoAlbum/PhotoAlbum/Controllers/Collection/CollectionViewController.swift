@@ -71,6 +71,13 @@ extension CollectionViewController : UICollectionViewDataSource{
         }
         return cell
     }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let pdc = PhotoDetailController()
+        if let values = self.photosCollectionViewModel.items[indexPath.section+1]{
+            pdc.setupView(photo: PhotoDetailModelView(item: values[indexPath.item]))
+        }
+        CustomNavigationController.shared.pushViewController(pdc, animated: true)
+    }
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         // Dequeue Reusable Supplementary View
         if let supplementaryView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "header", for: indexPath) as? SectionHeader {

@@ -41,12 +41,28 @@ class CustomNavigationController: UINavigationController {
         self.topViewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIView())
         self.topViewController?.navigationController?.navigationBar.barTintColor = UIColor.white
     }
-    
+    func loadStylePhotoDetailView(title: String){
+        titleLabel.text = title
+        titleLabel.textColor = UIColor.black
+        titleLabel.snp.removeConstraints()
+        self.titleLabel.snp.makeConstraints { (make) in
+            make.centerX.centerY.equalToSuperview()
+        }
+        let button = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(closeViewController))
+        topViewController?.navigationItem.leftBarButtonItem = button
+        topViewController?.navigationController?.navigationBar.barTintColor = UIColor.white
+    }
+    @objc func closeViewController(){
+        self.popViewController(animated: true)
+    }
     override func pushViewController(_ viewController: UIViewController, animated: Bool) {
         super.pushViewController(viewController, animated: true)
         
         if viewController.isKind(of: CollectionViewController.self){
             loadStyleCollectionView(title: "Album")
+        }
+        if viewController.isKind(of: PhotoDetailController.self){
+            loadStylePhotoDetailView(title: "Photo Detail")
         }
     }
 

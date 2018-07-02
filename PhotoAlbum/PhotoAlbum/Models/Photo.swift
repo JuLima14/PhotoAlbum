@@ -8,6 +8,18 @@
 
 import UIKit
 
-class Photo: NSObject {
+struct Photo {
+    var albumId: Int!
+    var id: Int!
+    var title: String!
+    var url: String!
+    var thumbnailUrl: String!
+}
 
+enum PhotoNames : String{
+    case albumId = "albumId"
+    case id = "id"
+    case title = "title"
+    case url = "url"
+    case thumbnailUrl = "thumbnailUrl"
 }

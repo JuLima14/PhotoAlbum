@@ -41,6 +41,14 @@ class CustomNavigationController: UINavigationController {
         self.topViewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIView())
         self.topViewController?.navigationController?.navigationBar.barTintColor = UIColor.white
     }
+    
+    override func pushViewController(_ viewController: UIViewController, animated: Bool) {
+        super.pushViewController(viewController, animated: true)
+        
+        if viewController.isKind(of: CollectionViewController.self){
+            loadStyleCollectionView(title: "Album")
+        }
+    }
 
 }
 

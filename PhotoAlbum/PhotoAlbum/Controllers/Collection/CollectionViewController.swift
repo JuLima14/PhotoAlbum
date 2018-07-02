@@ -17,7 +17,14 @@ class CollectionViewController: UIViewController {
         super.viewDidLoad()
         setupView()
     }
-    
+    override func viewWillAppear(_ animated: Bool) {
+        navigationController?.hidesBarsOnSwipe = true
+        CustomNavigationController.shared.loadStyleCollectionView(title: "Album")
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        navigationController?.hidesBarsOnSwipe = false
+        navigationController?.setNavigationBarHidden(false, animated: false)
+    }
     func setupView(){
         CustomNavigationController.shared.navigationBar.isTranslucent = false
         photosCollectionView = {
@@ -73,7 +80,6 @@ extension CollectionViewController : UICollectionViewDataSource{
         }
         fatalError("Unable to Dequeue Reusable Supplementary View")
     }
-
 }
 extension CollectionViewController:  UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {

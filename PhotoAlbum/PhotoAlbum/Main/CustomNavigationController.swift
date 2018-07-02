@@ -30,11 +30,17 @@ class CustomNavigationController: UINavigationController {
         CustomNavigationController.shared.navigationBar.addSubview(titleLabel)
         CustomNavigationController.shared.navigationBar.shadowImage = UIImage()
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
+    func loadStyleCollectionView(title: String){
+        titleLabel.text = title
+        titleLabel.textColor = UIColor.black
+        self.titleLabel.snp.removeConstraints()
+        self.titleLabel.snp.makeConstraints { (make) in
+            make.top.bottom.right.equalToSuperview()
+            make.left.equalToSuperview().inset(20)
+        }
+        self.topViewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIView())
+        self.topViewController?.navigationController?.navigationBar.barTintColor = UIColor.white
     }
-
 
 }
 

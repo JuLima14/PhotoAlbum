@@ -38,6 +38,8 @@ class CollectionViewController: UIViewController {
         photosCollectionViewModel = CollectionViewModel()
         view.addSubview(photosCollectionView)
         
+        registerForPreviewing(with: self, sourceView: photosCollectionView.collectionView)
+        
         photosCollectionView.snp.makeConstraints { (make) in
             make.top.left.right.bottom.equalToSuperview()
         }
@@ -49,7 +51,6 @@ class CollectionViewController: UIViewController {
             }
         }
     }
-    
 }
 extension CollectionViewController : UICollectionViewDataSource{
     
@@ -104,5 +105,34 @@ extension CollectionViewController:  UICollectionViewDelegateFlowLayout{
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsetsMake(10, 10, 10, 10)
+    }
+}
+extension CollectionViewController: UIViewControllerPreviewingDelegate{
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
+        
+        guard let indexPath = photosCollectionView.collectionView.indexPathForItem(at: location) else {
+            return nil
+        }
+        let pdc = PhotoDetailController()
+        let diameter: CGFloat = view.frame.width
+        pdc.preferredContentSize = CGSize(width: diameter, height: diameter)
+        pdc.view.frame = CGRect(origin: CGPoint.zero, size: CGSize(width: diameter, height: diameter))
+        pdc.view.layer.masksToBounds = true
+        pdc.view.layer.cornerRadius = pdc.view.frame.width / 2
+        if let values = self.photosCollectionViewModel.items[indexPath.section+1]{
+            pdc.setupView(photo: PhotoDetailModelView(item: values[indexPath.item]))
+            pdc.isHiddenDescriptionLabel = true
+        }
+        return pdc
+    }
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
+        UIView.animate(withDuration: 0.5) {
+            viewControllerToCommit.view.layer.masksToBounds = false
+            if viewControllerToCommit.isKind(of: PhotoDetailController.self){
+                (viewControllerToCommit as! PhotoDetailController).isHiddenDescriptionLabel = false
+            }
+            CustomNavigationController.shared.pushViewController(viewControllerToCommit, animated: false)
+        }
     }
 }

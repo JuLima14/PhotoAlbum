@@ -13,6 +13,18 @@ class PhotoDetailController: UIViewController {
     var photoDetailView: PhotoDetailView!
     var photoDetailModelView: PhotoDetailModelView!
     
+    var isHiddenDescriptionLabel: Bool = false {
+        willSet(value){
+            if let view = photoDetailView{
+                if let label = view.descriptionLabel{
+                    label.isHidden = value
+                }
+            }
+        }
+    }
+    deinit {
+        print("Deinit PhotoDetailController")
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         

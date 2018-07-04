@@ -33,13 +33,24 @@ class CustomNavigationController: UINavigationController {
     func loadStyleCollectionView(title: String){
         titleLabel.text = title
         titleLabel.textColor = UIColor.black
-        self.titleLabel.snp.removeConstraints()
-        self.titleLabel.snp.makeConstraints { (make) in
+        titleLabel.snp.removeConstraints()
+        titleLabel.snp.makeConstraints { (make) in
             make.top.bottom.right.equalToSuperview()
             make.left.equalToSuperview().inset(20)
         }
-        self.topViewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIView())
-        self.topViewController?.navigationController?.navigationBar.barTintColor = UIColor.white
+        topViewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIView())
+        topViewController?.navigationController?.navigationBar.barTintColor = UIColor.white
+    }
+    func loadStyleListView(title: String){
+        titleLabel.text = title
+        titleLabel.textColor = UIColor.black
+        titleLabel.snp.removeConstraints()
+        titleLabel.snp.makeConstraints { (make) in
+            make.top.bottom.right.equalToSuperview()
+            make.left.equalToSuperview().inset(20)
+        }
+        topViewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIView())
+        topViewController?.navigationController?.navigationBar.barTintColor = UIColor.white
     }
     func loadStylePhotoDetailView(title: String){
         titleLabel.text = title
@@ -54,16 +65,6 @@ class CustomNavigationController: UINavigationController {
     }
     @objc func closeViewController(){
         self.popViewController(animated: true)
-    }
-    override func pushViewController(_ viewController: UIViewController, animated: Bool) {
-        super.pushViewController(viewController, animated: true)
-        
-        if viewController.isKind(of: CollectionViewController.self){
-            loadStyleCollectionView(title: "Album")
-        }
-        if viewController.isKind(of: PhotoDetailController.self){
-            loadStylePhotoDetailView(title: "Photo Detail")
-        }
     }
 
 }

@@ -28,7 +28,8 @@ class PhotoDetailController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-    override func viewDidAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
+        CustomNavigationController.shared.loadStylePhotoDetailView(title: "Photo Detail")
         CustomNavigationController.shared.hidesBarsOnSwipe = false
         if CustomNavigationController.shared.isNavigationBarHidden {
             CustomNavigationController.shared.setNavigationBarHidden(false, animated: true)
@@ -46,5 +47,13 @@ class PhotoDetailController: UIViewController {
                 print("Error loading Image from URL: \(String(describing: url!))\n\(String(describing: error?.localizedDescription))")
             }
         }
+    }
+    func prepareViewForPreviewing(){
+        let diameter: CGFloat = view.frame.width
+        preferredContentSize = CGSize(width: diameter, height: diameter)
+        view.frame = CGRect(origin: CGPoint.zero, size: CGSize(width: diameter, height: diameter))
+        view.layer.masksToBounds = true
+        view.layer.cornerRadius = view.frame.width / 2
+        isHiddenDescriptionLabel = true
     }
 }

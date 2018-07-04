@@ -17,6 +17,14 @@ class ListViewController: UIViewController {
         super.viewDidLoad()
         setupView()
     }
+    override func viewWillAppear(_ animated: Bool) {
+        navigationController?.hidesBarsOnSwipe = false
+        navigationController?.setNavigationBarHidden(false, animated: true)
+        CustomNavigationController.shared.loadStyleListView(title: "List")
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        navigationController?.setNavigationBarHidden(false, animated: false)
+    }
     
     func setupView(){
         photosListView = {
@@ -52,6 +60,7 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource{
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellid") as! AlbumCell
         cell.photosListViewModel = photosListViewModel
         cell.sectionToShow = indexPath.section
+        registerForPreviewing(with: self, sourceView: cell)
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -68,4 +77,30 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource{
         return 70
     }
 }
-
+extension ListViewController: UIViewControllerPreviewingDelegate{
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
+        guard let albumcell = previewingContext.sourceView as? AlbumCell else{
+            return nil
+        }
+        guard let item = albumcell.collectionView.indexPathForItem(at: location) else {
+            return nil
+        }
+        let indexPath = IndexPath.init(item: item.item, section: albumcell.sectionToShow)
+        let pdc = PhotoDetailController()
+        if let values = photosListViewModel.items[indexPath.section+1]{
+            pdc.setupView(photo: PhotoDetailModelView(item: values[indexPath.item]))
+            pdc.prepareViewForPreviewing()
+        }
+        return pdc
+    }
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
+        UIView.animate(withDuration: 0.5) {
+            viewControllerToCommit.view.layer.masksToBounds = false
+            if viewControllerToCommit.isKind(of: PhotoDetailController.self){
+                (viewControllerToCommit as! PhotoDetailController).isHiddenDescriptionLabel = false
+            }
+        }
+        CustomNavigationController.shared.pushViewController(viewControllerToCommit, animated: true)
+    }
+}

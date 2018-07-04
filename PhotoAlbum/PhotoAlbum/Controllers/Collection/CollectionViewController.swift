@@ -117,14 +117,9 @@ extension CollectionViewController: UIViewControllerPreviewingDelegate{
             return nil
         }
         let pdc = PhotoDetailController()
-        let diameter: CGFloat = view.frame.width
-        pdc.preferredContentSize = CGSize(width: diameter, height: diameter)
-        pdc.view.frame = CGRect(origin: CGPoint.zero, size: CGSize(width: diameter, height: diameter))
-        pdc.view.layer.masksToBounds = true
-        pdc.view.layer.cornerRadius = pdc.view.frame.width / 2
-        if let values = self.photosCollectionViewModel.items[indexPath.section+1]{
+        if let values = photosCollectionViewModel.items[indexPath.section+1]{
             pdc.setupView(photo: PhotoDetailModelView(item: values[indexPath.item]))
-            pdc.isHiddenDescriptionLabel = true
+            pdc.prepareViewForPreviewing()
         }
         return pdc
     }

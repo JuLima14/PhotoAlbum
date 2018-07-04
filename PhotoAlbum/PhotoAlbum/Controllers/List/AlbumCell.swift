@@ -62,9 +62,9 @@ extension AlbumCell: UICollectionViewDataSource{
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
         guard let list = self.photosListViewModel.items[self.sectionToShow+1]
-            else{fatalError("Cannot load item")}
-            self.photosListViewModel.lastAlbumSelected = indexPath
+            else{ fatalError("Cannot load item") }
             let pdc = PhotoDetailController()
             pdc.setupView(photo: PhotoDetailModelView(item: list[indexPath.item]))
             CustomNavigationController.shared.pushViewController(pdc, animated: true)
@@ -89,3 +89,4 @@ extension AlbumCell: UICollectionViewDelegateFlowLayout{
         return UIEdgeInsetsMake(5, 5, 5, 5)
     }
 }
+

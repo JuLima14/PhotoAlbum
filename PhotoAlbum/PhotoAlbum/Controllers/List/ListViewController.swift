@@ -67,14 +67,19 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource{
         return 150
     }
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "header")
-        header?.contentView.backgroundColor = UIColor.white
-        header?.textLabel?.font = UIFont.boldSystemFont(ofSize: 30)
-        header?.textLabel?.text = "Album \(section+1)"
+        let header = UIView(frame: CGRect.init(x: 0, y: 0, width: view.frame.width, height: 40))
+        header.backgroundColor = UIColor.white
+        let titleLabel = UILabel(frame: CGRect.init(x: 0, y: 0, width: 300.0, height: 40))
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 30)
+        titleLabel.backgroundColor = UIColor.white
+        titleLabel.text = "Album \(section+1)"
+        header.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { (make) in
+            make.centerY.right.height.equalToSuperview()
+            make.left.equalToSuperview().inset(20)
+        }
+        
         return header
-    }
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 70
     }
 }
 extension ListViewController: UIViewControllerPreviewingDelegate{

@@ -66,11 +66,11 @@ extension CollectionViewController : UICollectionViewDataSource{
     }
     //indexPath starts in 0 and ids of photos starts in 1 so indexPath.item + 1
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellid", for: indexPath) as? PhotoViewCell else{ fatalError("Unable to Dequeue PhotoViewCell") }
-        cell.setupCell(with: .Collection)
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellid", for: indexPath) as? PhotoViewCell else{ return UICollectionViewCell() }
+        cell.setupCell(with: .Square)
         
         guard let list = photosCollectionViewModel.items[indexPath.section+1]
-            else{ fatalError("Unable to Dequeue PhotoViewCell") }
+            else{ return cell }
         
         cell.loadPhoto(photo: list[indexPath.item],type: PhotoNames.thumbnailUrl, completionHandler: {_ in})
         
@@ -91,6 +91,7 @@ extension CollectionViewController : UICollectionViewDataSource{
         return supplementaryView
         
     }
+
 }
 extension CollectionViewController:  UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {

@@ -12,6 +12,7 @@ class ListViewController: UIViewController {
     
     var photosListView: ListView!
     var photosListViewModel: ListViewModel!
+    var cellShape: Shape! = Shape.Square
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +22,7 @@ class ListViewController: UIViewController {
         navigationController?.hidesBarsOnSwipe = false
         navigationController?.setNavigationBarHidden(false, animated: true)
         CustomNavigationController.shared.loadStyleListView(title: "List")
+        CustomNavigationController.shared.switchDelegate = self
     }
     override func viewWillDisappear(_ animated: Bool) {
         navigationController?.setNavigationBarHidden(false, animated: false)
@@ -58,8 +60,12 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource{
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellid") as! AlbumCell
+        cell.shape = cellShape
         cell.photosListViewModel = photosListViewModel
         cell.sectionToShow = indexPath.section
+        for i in cell.collectionView.visibleCells{
+            (i as! PhotoViewCell).setupCell(with: cellShape)
+        }
         registerForPreviewing(with: self, sourceView: cell)
         return cell
     }
@@ -78,7 +84,6 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource{
             make.centerY.right.height.equalToSuperview()
             make.left.equalToSuperview().inset(20)
         }
-        
         return header
     }
 }
@@ -107,5 +112,15 @@ extension ListViewController: UIViewControllerPreviewingDelegate{
             }
         }
         CustomNavigationController.shared.pushViewController(viewControllerToCommit, animated: true)
+    }
+}
+extension ListViewController: UISwitchDelegate{
+    func switchStateChanged(value: Bool) {
+        if value{
+            cellShape = Shape.Circle
+        }else{
+            cellShape = Shape.Square
+        }
+        photosListView.tableView.reloadData()
     }
 }

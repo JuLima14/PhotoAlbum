@@ -13,7 +13,8 @@ class AlbumCell: UITableViewCell {
     var collectionView: UICollectionView!
     var photosListViewModel: ListViewModel!
     var sectionToShow: Int! = 0
-
+    var shape: Shape! = Shape.Square
+    
     override func awakeFromNib() {
         super.awakeFromNib()
     }
@@ -37,14 +38,12 @@ class AlbumCell: UITableViewCell {
         }
         collectionView.reloadData()
     }
-    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(false, animated: animated)
     }
-
 }
 extension AlbumCell: UICollectionViewDataSource{
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -55,21 +54,19 @@ extension AlbumCell: UICollectionViewDataSource{
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellid", for: indexPath) as! PhotoViewCell
-        cell.setupCell(with: .Collection)
+        cell.setupCell(with: shape)
         guard let list = photosListViewModel.items[self.sectionToShow+1]
-            else{ fatalError("Cannot load item") }
+            else{ return cell }
         cell.loadPhoto(photo: list[indexPath.item],type: PhotoNames.thumbnailUrl, completionHandler: {_ in})
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
         guard let list = self.photosListViewModel.items[self.sectionToShow+1]
-            else{ fatalError("Cannot load item") }
+            else{ return }
             let pdc = PhotoDetailController()
             pdc.setupView(photo: PhotoDetailModelView(item: list[indexPath.item]))
             CustomNavigationController.shared.pushViewController(pdc, animated: true)
     }
-
 }
 extension AlbumCell: UICollectionViewDelegateFlowLayout{
     

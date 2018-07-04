@@ -8,11 +8,17 @@
 
 import UIKit
 
+protocol UISwitchDelegate {
+    func switchStateChanged(value: Bool)
+}
+
 class CustomNavigationController: UINavigationController {
     
     static let shared = CustomNavigationController()
     
     var titleLabel: UILabel!
+    var changeShapeSwitch: UISwitch!
+    var switchDelegate: UISwitchDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,13 +33,24 @@ class CustomNavigationController: UINavigationController {
             label.textAlignment = .natural
             return label
         }()
+        changeShapeSwitch = {
+            let view = UISwitch(frame: CGRect.zero)
+            view.addTarget(self, action: #selector(self.handleSwitch(_:)), for: .valueChanged)
+            return view
+        }()
         CustomNavigationController.shared.navigationBar.addSubview(titleLabel)
+        CustomNavigationController.shared.navigationBar.addSubview(changeShapeSwitch)
         CustomNavigationController.shared.navigationBar.shadowImage = UIImage()
+    }
+    @objc func handleSwitch(_ sender : UISwitch!){
+        print(sender.isOn)
+        switchDelegate?.switchStateChanged(value: sender.isOn)
     }
     func loadStyleCollectionView(title: String){
         titleLabel.text = title
         titleLabel.textColor = UIColor.black
         titleLabel.snp.removeConstraints()
+        changeShapeSwitch.isHidden = true
         titleLabel.snp.makeConstraints { (make) in
             make.top.bottom.right.equalToSuperview()
             make.left.equalToSuperview().inset(20)
@@ -45,6 +62,12 @@ class CustomNavigationController: UINavigationController {
         titleLabel.text = title
         titleLabel.textColor = UIColor.black
         titleLabel.snp.removeConstraints()
+        changeShapeSwitch.isHidden = false
+        changeShapeSwitch.snp.removeConstraints()
+        changeShapeSwitch.snp.makeConstraints { (make) in
+            make.centerY.equalToSuperview()
+            make.right.equalToSuperview().inset(20)
+        }
         titleLabel.snp.makeConstraints { (make) in
             make.top.bottom.right.equalToSuperview()
             make.left.equalToSuperview().inset(20)
@@ -56,7 +79,8 @@ class CustomNavigationController: UINavigationController {
         titleLabel.text = title
         titleLabel.textColor = UIColor.black
         titleLabel.snp.removeConstraints()
-        self.titleLabel.snp.makeConstraints { (make) in
+        changeShapeSwitch.isHidden = true
+        titleLabel.snp.makeConstraints { (make) in
             make.centerX.centerY.equalToSuperview()
         }
         let button = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(closeViewController))

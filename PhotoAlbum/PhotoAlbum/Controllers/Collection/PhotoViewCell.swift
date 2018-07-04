@@ -10,25 +10,24 @@ import UIKit
 import SDWebImage
 
 enum Shape: String{
-    case List = "list"
-    case Collection = "collection"
+    case Circle = "circle"
+    case Square = "square"
 }
 class PhotoViewCell: UICollectionViewCell {
     
     var imageView: UIImageView!
     
     func setupCell(with: Shape){
-        
         backgroundColor = UIColor.white
         layer.masksToBounds = true
-        
-        switch with {
-        case .Collection:
-            layer.cornerRadius = 5
-        case .List:
-            layer.cornerRadius = frame.width / 2
+        UIView.animate(withDuration: 0.4) {
+            switch with {
+            case .Square:
+                self.layer.cornerRadius = 5
+            case .Circle:
+                self.layer.cornerRadius = self.frame.width / 2
+            }
         }
-        
         imageView = {
             let view = UIImageView(frame: CGRect.zero)
             view.isUserInteractionEnabled = true
@@ -56,5 +55,8 @@ class PhotoViewCell: UICollectionViewCell {
             self.imageView.image = fetchedImage!
             completionHandler(fetchedImage!)
         }
+    }
+    override func prepareForReuse() {
+        super.prepareForReuse()
     }
 }

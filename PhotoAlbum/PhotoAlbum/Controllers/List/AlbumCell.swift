@@ -13,16 +13,79 @@ class AlbumCell: UITableViewCell {
     var collectionView: UICollectionView!
     var photosListViewModel: ListViewModel!
     var sectionToShow: Int! = 0
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
     }
-
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        collectionView = {
+            let cellLayout = UICollectionViewFlowLayout()
+            cellLayout.scrollDirection = .horizontal
+            let view = UICollectionView(frame: CGRect.zero, collectionViewLayout: cellLayout)
+            view.register(PhotoViewCell.self, forCellWithReuseIdentifier: "cellid")
+            view.backgroundColor = UIColor.white
+            view.showsHorizontalScrollIndicator = false
+            view.delegate = self
+            view.dataSource = self
+            return view
+        }()
+        addSubview(collectionView)
+        collectionView.snp.makeConstraints { (make) in
+            make.top.bottom.left.right.equalToSuperview()
+        }
+        collectionView.reloadData()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(false, animated: animated)
-
-        // Configure the view for the selected state
     }
 
+}
+extension AlbumCell: UICollectionViewDataSource{
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return photosListViewModel.getTotalNumberInSection(section: section)
+    }
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellid", for: indexPath) as! PhotoViewCell
+        cell.setupCell(with: .Collection)
+        guard let list = photosListViewModel.items[self.sectionToShow+1]
+            else{ fatalError("Cannot load item") }
+        cell.loadPhoto(photo: list[indexPath.item],type: PhotoNames.thumbnailUrl, completionHandler: {_ in})
+        return cell
+    }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let list = self.photosListViewModel.items[self.sectionToShow+1]
+            else{fatalError("Cannot load item")}
+            self.photosListViewModel.lastAlbumSelected = indexPath
+            let pdc = PhotoDetailController()
+            pdc.setupView(photo: PhotoDetailModelView(item: list[indexPath.item]))
+            CustomNavigationController.shared.pushViewController(pdc, animated: true)
+    }
+
+}
+extension AlbumCell: UICollectionViewDelegateFlowLayout{
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let itemsPerRow: CGFloat = 3
+        let hardCodedPadding: CGFloat = 5
+        let itemWidth = (collectionView.bounds.width / itemsPerRow) - hardCodedPadding
+        return CGSize(width: itemWidth, height: itemWidth)
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 5
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 5
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsetsMake(5, 5, 5, 5)
+    }
 }

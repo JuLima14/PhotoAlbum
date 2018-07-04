@@ -51,15 +51,10 @@ class PhotoViewCell: UICollectionViewCell {
         }
         imageView.sd_setImage(with: URL(string: selectedType)!, placeholderImage: nil) { (fetchedImage, error, cacheType, url) in
             if error != nil {
-                print("Error loading Image from URL: \(String(describing: url))\n(error?.localizedDescription)")
+                print("Error loading Image from URL: \(String(describing: url))\n\(String(describing: error?.localizedDescription))")
             }
+            self.imageView.image = fetchedImage!
             completionHandler(fetchedImage!)
-            self.imageView.alpha = 0
-            self.imageView.image = fetchedImage
-            UIView.animate(withDuration: 0.5, delay: 0, options: UIViewAnimationOptions.showHideTransitionViews, animations: { () -> Void in
-                self.imageView.alpha = 1
-            }, completion: { (Bool) -> Void in    }
-            )
         }
     }
 }

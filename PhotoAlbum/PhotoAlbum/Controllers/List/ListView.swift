@@ -8,14 +8,30 @@
 
 import UIKit
 
-class ListView: UIView {
-
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
+class ListView: UIView{
+    
+    var tableView: UITableView!
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupPhotosCollectionView()
     }
-    */
-
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupPhotosCollectionView(){
+        translatesAutoresizingMaskIntoConstraints = false
+        tableView = {
+            let view = UITableView(frame: CGRect.zero)
+            view.backgroundColor = UIColor.white
+            return view
+        }()
+        addSubview(tableView)
+        
+        tableView.snp.makeConstraints { (make) in
+            make.top.left.right.bottom.equalToSuperview()
+        }
+    }
 }

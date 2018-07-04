@@ -54,8 +54,12 @@ class PhotoViewCell: UICollectionViewCell {
                 print("Error loading Image from URL: \(String(describing: url))\n(error?.localizedDescription)")
             }
             completionHandler(fetchedImage!)
-            
+            self.imageView.alpha = 0
             self.imageView.image = fetchedImage
+            UIView.animate(withDuration: 0.5, delay: 0, options: UIViewAnimationOptions.showHideTransitionViews, animations: { () -> Void in
+                self.imageView.alpha = 1
+            }, completion: { (Bool) -> Void in    }
+            )
         }
     }
 }

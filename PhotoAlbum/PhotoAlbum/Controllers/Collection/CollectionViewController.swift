@@ -25,6 +25,9 @@ class CollectionViewController: UIViewController {
         navigationController?.hidesBarsOnSwipe = false
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
+    deinit {
+        print("Deinit CollectionViewController")
+    }
     func setupView(){
         CustomNavigationController.shared.navigationBar.isTranslucent = false
         photosCollectionView = {
@@ -52,6 +55,7 @@ class CollectionViewController: UIViewController {
         }
     }
 }
+
 extension CollectionViewController : UICollectionViewDataSource{
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -62,14 +66,14 @@ extension CollectionViewController : UICollectionViewDataSource{
     }
     //indexPath starts in 0 and ids of photos starts in 1 so indexPath.item + 1
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellid", for: indexPath) as! PhotoViewCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellid", for: indexPath) as? PhotoViewCell else{ fatalError("Unable to Dequeue PhotoViewCell") }
         cell.setupCell(with: .Collection)
-        if photosCollectionViewModel.items[indexPath.section+1] != nil{
-            let list = photosCollectionViewModel.items[indexPath.section+1]
-            cell.loadPhoto(photo: (list?[indexPath.item])!,type: PhotoNames.thumbnailUrl, completionHandler: {_ in})
-        }else{
-            print("Fail when loading a cell IndexPath:(Section: \(indexPath.section+1), Item: \(indexPath.item)")
-        }
+        
+        guard let list = photosCollectionViewModel.items[indexPath.section+1]
+            else{ fatalError("Unable to Dequeue PhotoViewCell") }
+        
+        cell.loadPhoto(photo: list[indexPath.item],type: PhotoNames.thumbnailUrl, completionHandler: {_ in})
+        
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -81,12 +85,11 @@ extension CollectionViewController : UICollectionViewDataSource{
     }
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         // Dequeue Reusable Supplementary View
-        if let supplementaryView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "header", for: indexPath) as? SectionHeader {
-            // Configure Supplementary View
-            supplementaryView.setHeader(name: "Album \(indexPath.section+1)")
-            return supplementaryView
-        }
-        fatalError("Unable to Dequeue Reusable Supplementary View")
+        guard let supplementaryView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "header", for: indexPath) as? SectionHeader else { fatalError("Unable to Dequeue Reusable Supplementary View") }
+        // Configure Supplementary View
+        supplementaryView.setHeader(name: "Album \(indexPath.section+1)")
+        return supplementaryView
+        
     }
 }
 extension CollectionViewController:  UICollectionViewDelegateFlowLayout{

@@ -19,7 +19,7 @@ class MainTabBarController: UITabBarController {
         }
         
         let cvc = CollectionViewController()
-        let lvc = UIViewController()
+        let lvc = ListViewController()
         
         cvc.tabBarItem = MainTabBarItem(title: "collectionView", image: collectionIcon, tag: 1)
         lvc.tabBarItem = MainTabBarItem(title: "listView", image: listIcon, tag: 2)

@@ -46,7 +46,7 @@ class APIHelper {
                     if self.items[albumId] == nil{
                         self.items[albumId] = [Photo]()
                     }
-                    self.items[albumId]!.append(Photo(albumId: albumId, id: id, title: title, url: url, thumbnailUrl: thumbnailUrl))
+                    self.items[albumId]?.append(Photo(albumId: albumId, id: id, title: title, url: url, thumbnailUrl: thumbnailUrl))
                 })
                 completionHandler(false)
             }

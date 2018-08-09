@@ -47,18 +47,28 @@ class ListViewController: UIViewController {
         }
     }
 }
+
+//FIX ME: ONLY GET THE FIRST VIEW
 extension ListViewController: UIViewControllerPreviewingDelegate{
     
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
         guard let indexCollection = photosListView.tableView.indexPathForRow(at: location) else {
             return nil
         }
-        let collectionView = (photosListView.tableView.cellForRow(at: indexCollection) as! AlbumCell).collectionView
         
-        guard let indexPath =  collectionView?.indexPathForItem(at: location) else {
+        guard let albumCell = photosListView.tableView.cellForRow(at: indexCollection) as? AlbumCell else {
             return nil
         }
         
+        let collectionViewSelected = albumCell.collectionView
+        
+        let locationCollection = photosListView.tableView.convert(location, to: collectionViewSelected)
+        
+        guard let indexItem = collectionViewSelected?.indexPathForItem(at: locationCollection) else {
+            return nil
+        }
+        
+        let indexPath = IndexPath(item: indexItem.item, section: indexCollection.section)
         let pdc = PhotoDetailController()
         if let values = photosListViewModel.items[indexPath.section+1]{
             pdc.setupView(photo: PhotoDetailModelView(item: values[indexPath.item]))

@@ -24,13 +24,6 @@ class PhotoDetailController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-    override func viewWillAppear(_ animated: Bool) {
-//        CustomNavigationController.shared.loadStylePhotoDetailView(title: "Photo Detail")
-//        CustomNavigationController.shared.hidesBarsOnSwipe = false
-//        if CustomNavigationController.shared.isNavigationBarHidden {
-//            CustomNavigationController.shared.setNavigationBarHidden(false, animated: true)
-//        }
-    }
     
     func setupView(photo: PhotoDetailModelView!){
         photoDetailView = PhotoDetailView(photo: photo)

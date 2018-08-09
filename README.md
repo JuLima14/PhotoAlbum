@@ -1,2 +1,0 @@
-# PhotoAlbum
-Simple photo album

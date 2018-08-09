@@ -13,7 +13,6 @@ class AlbumCell: UITableViewCell {
     var collectionView: UICollectionView!
     var photosListViewModel: ListViewModel!
     var sectionToShow: Int! = 0
-    var shape: Shape! = Shape.Square
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -48,7 +47,7 @@ class AlbumCell: UITableViewCell {
 }
 extension AlbumCell: UISwitchDelegate{
     func switchStateChanged(value: Bool) {
-        shape = value ? Shape.Circle : Shape.Square
+        photosListViewModel.shapeCell = value ? Shape.Circle : Shape.Square
         collectionView.reloadData()
     }
 }
@@ -61,7 +60,7 @@ extension AlbumCell: UICollectionViewDataSource{
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellid", for: indexPath) as! PhotoViewCell
-        cell.setupCell(with: shape)
+        cell.setupCell(with: photosListViewModel.shapeCell)
         guard let list = photosListViewModel.items[self.sectionToShow+1]
             else{ return cell }
         cell.loadPhoto(photo: list[indexPath.item],type: PhotoNames.thumbnailUrl, completionHandler: {_ in})

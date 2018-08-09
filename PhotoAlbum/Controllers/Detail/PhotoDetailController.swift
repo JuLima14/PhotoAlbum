@@ -21,18 +21,15 @@ class PhotoDetailController: UIViewController {
             }
         }
     }
-    deinit {
-        print("Deinit PhotoDetailController")
-    }
     override func viewDidLoad() {
         super.viewDidLoad()
     }
     override func viewWillAppear(_ animated: Bool) {
-        CustomNavigationController.shared.loadStylePhotoDetailView(title: "Photo Detail")
-        CustomNavigationController.shared.hidesBarsOnSwipe = false
-        if CustomNavigationController.shared.isNavigationBarHidden {
-            CustomNavigationController.shared.setNavigationBarHidden(false, animated: true)
-        }
+//        CustomNavigationController.shared.loadStylePhotoDetailView(title: "Photo Detail")
+//        CustomNavigationController.shared.hidesBarsOnSwipe = false
+//        if CustomNavigationController.shared.isNavigationBarHidden {
+//            CustomNavigationController.shared.setNavigationBarHidden(false, animated: true)
+//        }
     }
     
     func setupView(photo: PhotoDetailModelView!){

@@ -22,10 +22,7 @@ class CollectionViewController: UIViewController {
         navigationController?.hidesBarsOnSwipe = true
         CustomNavigationController.shared.loadStyleCollectionView(title: "Album")
     }
-    override func viewWillDisappear(_ animated: Bool) {
-        navigationController?.hidesBarsOnSwipe = false
-        navigationController?.setNavigationBarHidden(false, animated: false)
-    }
+
     func setupView(){
         CustomNavigationController.shared.navigationBar.isTranslucent = false
         photosCollectionView = {
@@ -109,6 +106,7 @@ extension CollectionViewController:  UICollectionViewDelegateFlowLayout{
         return UIEdgeInsetsMake(10, 10, 10, 10)
     }
 }
+
 extension CollectionViewController: UIViewControllerPreviewingDelegate{
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
         

@@ -16,8 +16,8 @@ class CustomNavigationController: UINavigationController {
     
     static let shared = CustomNavigationController()
     
-    var titleLabel: UILabel!
-    var changeShapeSwitch: UISwitch!
+    private var titleLabel: UILabel!
+    private var changeShapeSwitch: UISwitch!
     var switchDelegate: [String:UISwitchDelegate]!
     
     override func viewDidLoad() {
@@ -26,7 +26,6 @@ class CustomNavigationController: UINavigationController {
         setupNav()
         switchDelegate = [String:UISwitchDelegate]()
     }
-    
     func setupNav(){
         titleLabel = {
             let label = UILabel(frame: CGRect.zero)
@@ -42,9 +41,14 @@ class CustomNavigationController: UINavigationController {
         CustomNavigationController.shared.navigationBar.addSubview(titleLabel)
         CustomNavigationController.shared.navigationBar.addSubview(changeShapeSwitch)
         CustomNavigationController.shared.navigationBar.shadowImage = UIImage()
+        
+        //is setted here to avoid move it when the titleLabel is animated when push/pop is executed
+        changeShapeSwitch.snp.makeConstraints { (make) in
+            make.centerY.equalToSuperview()
+            make.right.equalToSuperview().inset(20)
+        }
     }
     @objc func handleSwitch(_ sender : UISwitch!){
-        print(sender.isOn)
         if let keys = switchDelegate?.keys{
             for key in keys{
                 if let delegate = switchDelegate{
@@ -58,10 +62,15 @@ class CustomNavigationController: UINavigationController {
         titleLabel.textColor = UIColor.black
         titleLabel.snp.removeConstraints()
         changeShapeSwitch.isHidden = true
-        titleLabel.snp.makeConstraints { (make) in
-            make.top.bottom.right.equalToSuperview()
-            make.left.equalToSuperview().inset(20)
-        }
+        
+        UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.8 , options: UIViewAnimationOptions.curveLinear, animations: {
+            self.titleLabel.snp.remakeConstraints { (make) in
+                make.top.bottom.right.equalToSuperview()
+                make.left.equalToSuperview().inset(20)
+            }
+            CustomNavigationController.shared.navigationBar.layoutIfNeeded()
+        }) { (true) in }
+        
         topViewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIView())
         topViewController?.navigationController?.navigationBar.barTintColor = UIColor.white
     }
@@ -75,11 +84,15 @@ class CustomNavigationController: UINavigationController {
             make.centerY.equalToSuperview()
             make.right.equalToSuperview().inset(20)
         }
-        titleLabel.snp.makeConstraints { (make) in
-            make.top.bottom.right.equalToSuperview()
-            make.left.equalToSuperview().inset(20)
-        }
-        topViewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIView())
+        
+        UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.8, options: UIViewAnimationOptions.curveLinear, animations: {
+            self.titleLabel.snp.remakeConstraints { (make) in
+                make.top.bottom.right.equalToSuperview()
+                make.left.equalToSuperview().inset(20)
+            }
+            CustomNavigationController.shared.navigationBar.layoutIfNeeded()
+        }) { (true) in }
+
         topViewController?.navigationController?.navigationBar.barTintColor = UIColor.white
     }
     func loadStylePhotoDetailView(title: String){
@@ -90,12 +103,31 @@ class CustomNavigationController: UINavigationController {
         titleLabel.snp.makeConstraints { (make) in
             make.centerX.centerY.equalToSuperview()
         }
-        let button = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(closeViewController))
-        topViewController?.navigationItem.leftBarButtonItem = button
         topViewController?.navigationController?.navigationBar.barTintColor = UIColor.white
     }
-    @objc func closeViewController(){
-        self.popViewController(animated: true)
+    //this is coupling the behavior
+    override func pushViewController(_ viewController: UIViewController, animated: Bool) {
+        super.pushViewController(viewController, animated: animated)
+        if viewController.isKind(of: PhotoDetailController.self){
+            CustomNavigationController.shared.loadStylePhotoDetailView(title: "Photo Detail")
+            CustomNavigationController.shared.hidesBarsOnSwipe = false
+            if CustomNavigationController.shared.isNavigationBarHidden {
+                CustomNavigationController.shared.setNavigationBarHidden(false, animated: true)
+            }
+        }
     }
-    
+    //this is coupling the behavior
+    override func popViewController(animated: Bool) -> UIViewController? {
+        super.popViewController(animated: true)
+        let vc = visibleViewController
+        if let lastvc = vc{
+            if lastvc.isKind(of: ListViewController.self){
+                CustomNavigationController.shared.setNavigationBarHidden(false, animated: false)
+            }else if lastvc.isKind(of: CollectionViewController.self){
+                CustomNavigationController.shared.hidesBarsOnSwipe = false
+                CustomNavigationController.shared.setNavigationBarHidden(false, animated: false)
+            }
+        }
+        return vc
+    }
 }

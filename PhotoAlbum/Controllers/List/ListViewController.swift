@@ -19,12 +19,9 @@ class ListViewController: UIViewController {
         setupView()
     }
     override func viewWillAppear(_ animated: Bool) {
-        navigationController?.hidesBarsOnSwipe = false
-        navigationController?.setNavigationBarHidden(false, animated: true)
+        self.navigationController?.hidesBarsOnSwipe = false
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
         CustomNavigationController.shared.loadStyleListView(title: "List")
-    }
-    override func viewWillDisappear(_ animated: Bool) {
-        navigationController?.setNavigationBarHidden(false, animated: false)
     }
     func setupView(){
         photosListView = {

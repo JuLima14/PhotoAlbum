@@ -17,7 +17,7 @@ class PhotoViewCell: UICollectionViewCell {
     var imageView: UIImageView!
     
     func setupCell(with: Shape){
-        backgroundColor = UIColor.white
+        backgroundColor = Stylesheet.shared.white
         layer.masksToBounds = true
         UIView.animate(withDuration: 0.4) {
             switch with {

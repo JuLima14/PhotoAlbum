@@ -25,9 +25,12 @@ class CollectionView: UIView {
     private func setupPhotosCollectionView(){
         translatesAutoresizingMaskIntoConstraints = false
         collectionView = {
-            let cellLayout = StickyHeadersCollectionViewFlowLayout()
-            let view = UICollectionView(frame: bounds, collectionViewLayout: cellLayout)
-            view.backgroundColor = UIColor.white
+            let layout = UICollectionViewFlowLayout()
+            layout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0)
+            layout.sectionHeadersPinToVisibleBounds = true
+            layout.sectionInset.top = 10
+            let view = UICollectionView(frame: bounds, collectionViewLayout: layout)
+            view.backgroundColor = Stylesheet.shared.white
             view.translatesAutoresizingMaskIntoConstraints = false
             return view
         }()

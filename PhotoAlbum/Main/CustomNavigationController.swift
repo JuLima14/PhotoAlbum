@@ -15,17 +15,17 @@ protocol UISwitchDelegate {
 class CustomNavigationController: UINavigationController {
     
     static let shared = CustomNavigationController()
-    
     private var titleLabel: UILabel!
     private var changeShapeSwitch: UISwitch!
     var switchDelegate: [String:UISwitchDelegate]!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         CustomNavigationController.shared.pushViewController(MainTabBarController(), animated: true)
         setupNav()
         switchDelegate = [String:UISwitchDelegate]()
     }
+
     func setupNav(){
         titleLabel = {
             let label = UILabel(frame: CGRect.zero)
@@ -41,7 +41,6 @@ class CustomNavigationController: UINavigationController {
         CustomNavigationController.shared.navigationBar.addSubview(titleLabel)
         CustomNavigationController.shared.navigationBar.addSubview(changeShapeSwitch)
         CustomNavigationController.shared.navigationBar.shadowImage = UIImage()
-        
         //is setted here to avoid move it when the titleLabel is animated when push/pop is executed
         changeShapeSwitch.snp.makeConstraints { (make) in
             make.centerY.equalToSuperview()
@@ -56,13 +55,13 @@ class CustomNavigationController: UINavigationController {
                 }
             }
         }
+        sender.onTintColor = Stylesheet.shared.darkGray
     }
     func loadStyleCollectionView(title: String){
         titleLabel.text = title
-        titleLabel.textColor = UIColor.black
+        titleLabel.textColor = Stylesheet.shared.white
         titleLabel.snp.removeConstraints()
         changeShapeSwitch.isHidden = true
-        
         UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.8 , options: UIViewAnimationOptions.curveLinear, animations: {
             self.titleLabel.snp.remakeConstraints { (make) in
                 make.top.bottom.right.equalToSuperview()
@@ -72,11 +71,11 @@ class CustomNavigationController: UINavigationController {
         }) { (true) in }
         
         topViewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIView())
-        topViewController?.navigationController?.navigationBar.barTintColor = UIColor.white
+        topViewController?.navigationController?.navigationBar.barTintColor = Stylesheet.shared.red
     }
     func loadStyleListView(title: String){
         titleLabel.text = title
-        titleLabel.textColor = UIColor.black
+        titleLabel.textColor = Stylesheet.shared.white
         titleLabel.snp.removeConstraints()
         changeShapeSwitch.isHidden = false
         changeShapeSwitch.snp.removeConstraints()
@@ -84,7 +83,6 @@ class CustomNavigationController: UINavigationController {
             make.centerY.equalToSuperview()
             make.right.equalToSuperview().inset(20)
         }
-        
         UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.8, options: UIViewAnimationOptions.curveLinear, animations: {
             self.titleLabel.snp.remakeConstraints { (make) in
                 make.top.bottom.right.equalToSuperview()
@@ -93,17 +91,17 @@ class CustomNavigationController: UINavigationController {
             CustomNavigationController.shared.navigationBar.layoutIfNeeded()
         }) { (true) in }
 
-        topViewController?.navigationController?.navigationBar.barTintColor = UIColor.white
+        topViewController?.navigationController?.navigationBar.barTintColor = Stylesheet.shared.red
     }
     func loadStylePhotoDetailView(title: String){
         titleLabel.text = title
-        titleLabel.textColor = UIColor.black
+        titleLabel.textColor = Stylesheet.shared.black
         titleLabel.snp.removeConstraints()
         changeShapeSwitch.isHidden = true
         titleLabel.snp.makeConstraints { (make) in
             make.centerX.centerY.equalToSuperview()
         }
-        topViewController?.navigationController?.navigationBar.barTintColor = UIColor.white
+        topViewController?.navigationController?.navigationBar.barTintColor = Stylesheet.shared.red
     }
     //this is coupling the behavior
     override func pushViewController(_ viewController: UIViewController, animated: Bool) {
@@ -129,5 +127,8 @@ class CustomNavigationController: UINavigationController {
             }
         }
         return vc
+    }
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
     }
 }

@@ -13,6 +13,7 @@ class CollectionViewController: UIViewController {
     
     var photosCollectionView: CollectionView!
     var photosCollectionViewModel: CollectionViewModel!
+    var activityIndicator: UIActivityIndicatorView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,29 +26,40 @@ class CollectionViewController: UIViewController {
 
     func setupView(){
         CustomNavigationController.shared.navigationBar.isTranslucent = false
+        CustomNavigationController.shared.tabBarItem.badgeColor = Stylesheet.shared.red
+        activityIndicator = UIActivityIndicatorView()
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.activityIndicatorViewStyle = .gray
         photosCollectionView = {
             let view = CollectionView(frame: CGRect.zero)
             view.collectionView.dataSource = self
             view.collectionView.delegate = self
             view.collectionView.register(PhotoViewCell.self, forCellWithReuseIdentifier: "cellid")
             view.collectionView.register(SectionHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "header")
+            view.collectionView.backgroundColor = Stylesheet.shared.middleGray
             return view
         }()
         photosCollectionViewModel = CollectionViewModel()
         
         view.addSubview(photosCollectionView)
-        
+        view.addSubview(activityIndicator)
+       
         registerForPreviewing(with: self, sourceView: photosCollectionView.collectionView)
         
         photosCollectionView.snp.makeConstraints { (make) in
             make.top.left.right.bottom.equalToSuperview()
         }
+        activityIndicator.snp.makeConstraints { (make) in
+            make.center.equalToSuperview()
+        }
+        activityIndicator.startAnimating()
         photosCollectionViewModel.loadPhotos { (error) in
             if !error{
                 self.photosCollectionViewModel.items.removeAll()
                 self.photosCollectionViewModel.items = APIHelper.shared.items
                 self.photosCollectionView.collectionView.reloadData()
             }
+            self.activityIndicator.stopAnimating()
         }
     }
 }
@@ -61,7 +73,9 @@ extension CollectionViewController : UICollectionViewDataSource{
     }
     //indexPath starts in 0 and ids of photos starts in 1 so indexPath.item + 1
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellid", for: indexPath) as? PhotoViewCell else{ return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellid", for: indexPath) as? PhotoViewCell
+            else{ return UICollectionViewCell() }
+        
         cell.setupCell(with: .Square)
         
         guard let list = photosCollectionViewModel.items[indexPath.section+1]
@@ -80,9 +94,12 @@ extension CollectionViewController : UICollectionViewDataSource{
     }
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         // Dequeue Reusable Supplementary View
-        guard let supplementaryView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "header", for: indexPath) as? SectionHeader else { fatalError("Unable to Dequeue Reusable Supplementary View") }
+        guard let supplementaryView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "header", for: indexPath) as? SectionHeader
+            else { fatalError("Unable to Dequeue Reusable Supplementary View") }
         // Configure Supplementary View
         supplementaryView.setHeader(name: "Album \(indexPath.section+1)")
+        supplementaryView.titleLabel.textColor = Stylesheet.shared.white
+        supplementaryView.backgroundColor = Stylesheet.shared.darkGray
         return supplementaryView
         
     }
@@ -90,21 +107,22 @@ extension CollectionViewController : UICollectionViewDataSource{
 }
 extension CollectionViewController:  UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.bounds.width, height: 70)
+        return CGSize(width: collectionView.bounds.width, height: 60)
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 0.0
+        return 10
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 5.0
+        return 10
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsetsMake(0, 10, 10, 10)
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = photosCollectionView.bounds.width / 2 - 15
         return CGSize(width: width, height: width)
     }
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsetsMake(10, 10, 10, 10)
-    }
+    
 }
 
 extension CollectionViewController: UIViewControllerPreviewingDelegate{

@@ -18,6 +18,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = CustomNavigationController.shared
         window?.makeKeyAndVisible()
+        
+        UIApplication.shared.statusBarStyle = .lightContent
+        UIApplication.shared.statusBarView?.backgroundColor = Stylesheet.shared.red
+        
+        
         return true
     }
 

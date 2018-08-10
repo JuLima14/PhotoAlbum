@@ -26,7 +26,7 @@ class AlbumCell: UITableViewCell {
             cellLayout.scrollDirection = .horizontal
             let view = UICollectionView(frame: CGRect.zero, collectionViewLayout: cellLayout)
             view.register(PhotoViewCell.self, forCellWithReuseIdentifier: "cellid")
-            view.backgroundColor = UIColor.white
+            view.backgroundColor = Stylesheet.shared.white
             view.showsHorizontalScrollIndicator = false
             view.delegate = self
             view.dataSource = self

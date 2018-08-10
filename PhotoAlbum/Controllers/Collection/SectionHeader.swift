@@ -17,14 +17,9 @@ class SectionHeader: UICollectionReusableView {
         return view
     }()
     
-    override var frame: CGRect{
-        didSet(oldframe){
-            print("\(frame.origin)")
-        }
-    }
-    
     override init(frame: CGRect) {
         super.init(frame: CGRect.zero)
+        translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = Stylesheet.shared.white
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { (make) in

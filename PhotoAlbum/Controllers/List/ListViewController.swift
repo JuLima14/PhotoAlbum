@@ -13,6 +13,7 @@ class ListViewController: UIViewController {
 
     var photosListView: ListView!
     var photosListViewModel: ListViewModel!
+    var activityIndicator: UIActivityIndicatorView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,31 +25,42 @@ class ListViewController: UIViewController {
         CustomNavigationController.shared.loadStyleListView(title: "List")
     }
     func setupView(){
+        activityIndicator = UIActivityIndicatorView()
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.activityIndicatorViewStyle = .gray
         photosListView = {
             let view = ListView(frame: CGRect.zero)
             view.tableView.dataSource = self
             view.tableView.delegate = self
             view.tableView.register(AlbumCell.self, forCellReuseIdentifier: "cellid")
             view.tableView.register(ListHeader.self, forHeaderFooterViewReuseIdentifier: "header")
+            view.tableView.backgroundColor = Stylesheet.shared.darkGray
             return view
         }()
         photosListViewModel = ListViewModel()
         view.addSubview(photosListView)
+        view.addSubview(activityIndicator)
+        
         registerForPreviewing(with: self, sourceView: photosListView.tableView)
+        
         photosListView.snp.makeConstraints { (make) in
             make.top.left.right.bottom.equalToSuperview()
         }
+        activityIndicator.snp.makeConstraints { (make) in
+            make.center.equalToSuperview()
+        }
+        
+        activityIndicator.startAnimating()
         photosListViewModel.loadPhotos { (error) in
             if !error{
                 self.photosListViewModel.items.removeAll()
                 self.photosListViewModel.items = APIHelper.shared.items
                 self.photosListView.tableView.reloadData()
             }
+            self.activityIndicator.stopAnimating()
         }
     }
 }
-
-//FIX ME: ONLY GET THE FIRST VIEW
 extension ListViewController: UIViewControllerPreviewingDelegate{
     
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
@@ -59,12 +71,8 @@ extension ListViewController: UIViewControllerPreviewingDelegate{
         guard let albumCell = photosListView.tableView.cellForRow(at: indexCollection) as? AlbumCell else {
             return nil
         }
-        
-        let collectionViewSelected = albumCell.collectionView
-        
-        let locationCollection = photosListView.tableView.convert(location, to: collectionViewSelected)
-        
-        guard let indexItem = collectionViewSelected?.indexPathForItem(at: locationCollection) else {
+        let locationCollection = photosListView.tableView.convert(location, to: albumCell.collectionView)
+        guard let indexItem = albumCell.collectionView?.indexPathForItem(at: locationCollection) else {
             return nil
         }
         
@@ -72,12 +80,18 @@ extension ListViewController: UIViewControllerPreviewingDelegate{
         let pdc = PhotoDetailController()
         if let values = photosListViewModel.items[indexPath.section+1]{
             pdc.setupView(photo: PhotoDetailModelView(item: values[indexPath.item]))
+            pdc.prepareViewForPreviewing()
         }
         return pdc
     }
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
-        photosListViewModel.lastAlbumSelected = IndexPath(item: -1, section: -1)
-        CustomNavigationController.shared.pushViewController(viewControllerToCommit, animated: true)
+        UIView.animate(withDuration: 0.5) {
+            viewControllerToCommit.view.layer.masksToBounds = false
+            if viewControllerToCommit.isKind(of: PhotoDetailController.self){
+                (viewControllerToCommit as! PhotoDetailController).isHiddenDescriptionLabel = false
+            }
+            CustomNavigationController.shared.pushViewController(viewControllerToCommit, animated: false)
+        }
     }
 }
 extension ListViewController: UITableViewDelegate, UITableViewDataSource{
@@ -91,7 +105,7 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource{
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellid") as! AlbumCell
         cell.photosListViewModel = photosListViewModel
         cell.sectionToShow = indexPath.section
-        
+        cell.collectionView.backgroundColor = Stylesheet.shared.darkGray
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -99,11 +113,10 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource{
     }
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "header")
-        header?.contentView.backgroundColor = Stylesheet.shared.white
+        header?.contentView.backgroundColor = Stylesheet.shared.darkGray
         header?.textLabel?.text = "Album \(section+1)"
-        header?.textLabel?.textColor = Stylesheet.shared.black
+        header?.textLabel?.textColor = Stylesheet.shared.white
         header?.textLabel?.font = UIFont.boldSystemFont(ofSize: 25)
-        
         return header
     }
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

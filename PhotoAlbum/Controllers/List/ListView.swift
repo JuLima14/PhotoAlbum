@@ -25,7 +25,7 @@ class ListView: UIView{
         translatesAutoresizingMaskIntoConstraints = false
         tableView = {
             let view = UITableView(frame: CGRect.zero)
-            view.backgroundColor = UIColor.white
+            view.backgroundColor = Stylesheet.shared.white
             return view
         }()
         addSubview(tableView)

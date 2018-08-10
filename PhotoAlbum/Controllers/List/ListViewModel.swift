@@ -12,7 +12,6 @@ import UIKit
 class ListViewModel{
     
     var items = [Int:[Photo]]()
-    var lastAlbumSelected: IndexPath = IndexPath(item: 0, section: 0)
     var shapeCell: Shape = .Square
     
     func getTotalNumberInSection(section: Int) -> Int{

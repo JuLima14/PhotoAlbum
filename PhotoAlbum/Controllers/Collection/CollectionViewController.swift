@@ -10,7 +10,7 @@ import UIKit
 
 class CollectionViewController: UIViewController {
     
-    var photosCollectionView: CollectionView = {
+    let photosCollectionView: CollectionView = {
         let view = CollectionView(frame: CGRect.zero)
         view.collectionView.register(PhotoViewCell.self, forCellWithReuseIdentifier: "cellid")
         view.collectionView.register(SectionHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "header")
@@ -18,8 +18,8 @@ class CollectionViewController: UIViewController {
         return view
     }()
     
-    var photosCollectionViewModel = CollectionViewModel()
-    var activityIndicator = UIActivityIndicatorView()
+    let photosCollectionViewModel = CollectionViewModel()
+    let activityIndicator = UIActivityIndicatorView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,12 +30,14 @@ class CollectionViewController: UIViewController {
         navigationController?.hidesBarsOnSwipe = true
 //        self.loadStyleNavigationBar(title: "Album")
     }
+    
     func loadStyleNavigationBar(title: String){
         navigationController?.navigationBar.pushItem(UINavigationItem(title: title), animated: true)
         navigationController?.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIView())
         navigationController?.navigationBar.barTintColor = Stylesheet.shared.red
         navigationController?.navigationBar.isTranslucent = false
     }
+    
     func setup(){
         view.backgroundColor = Stylesheet.shared.middleGray
         
@@ -76,11 +78,13 @@ class CollectionViewController: UIViewController {
 }
 extension CollectionViewController : UISwitchDelegate{
     func switchStateChanged(value: Bool) {
+        
         if value{
             self.photosCollectionViewModel.quantityOfColumns = 1
         }else{
             self.photosCollectionViewModel.quantityOfColumns = 2
         }
+        
         UIView.animate(withDuration: 1) {
             let layout = UICollectionViewFlowLayout()
             let quantity: CGFloat = self.photosCollectionViewModel.quantityOfColumns
@@ -95,9 +99,11 @@ extension CollectionViewController : UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return photosCollectionViewModel.numberOfItemsInSection(section: section)
     }
+    
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return photosCollectionViewModel.totalSections()
     }
+    
     //indexPath starts in 0 and ids of photos starts in 1 so indexPath.item + 1
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellid", for: indexPath) as? PhotoViewCell
@@ -115,10 +121,11 @@ extension CollectionViewController : UICollectionViewDataSource{
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let pdc = PhotoDetailController()
-        if let values = self.photosCollectionViewModel.items[indexPath.section+1]{
-            pdc.setup(photo: PhotoDetailModelView(item: values[indexPath.item]))
+        present(pdc, animated: true) { [weak self] in
+            if let values = self?.photosCollectionViewModel.items[indexPath.section+1]{
+                pdc.setup(photo: PhotoDetailModelView(item: values[indexPath.item]))
+            }
         }
-        CustomNavigationController.shared.pushViewController(pdc, animated: true)
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -134,19 +141,24 @@ extension CollectionViewController : UICollectionViewDataSource{
     }
     
 }
+//TODO: Fix this mess with a flowLayout Custom
 extension CollectionViewController:  UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: collectionView.bounds.width, height: 60)
     }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 10
     }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 10
     }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsetsMake(0, 10, 10, 10)
     }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let quantity: CGFloat = self.photosCollectionViewModel.quantityOfColumns
         let width = self.photosCollectionView.bounds.width / quantity - 15

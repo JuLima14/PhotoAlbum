@@ -10,16 +10,11 @@ import SDWebImage
 
 class PhotoDetailController: UIViewController {
     
-    var photoDetailView: PhotoDetailView!
-    var photoDetailModelView: PhotoDetailModelView!
+    let photoDetailView = PhotoDetailView(frame: .zero)
     
     var isHiddenDescriptionLabel: Bool = false {
         willSet(value){
-            if let view = photoDetailView{
-                if let label = view.descriptionLabel{
-                    label.isHidden = value
-                }
-            }
+            photoDetailView.descriptionLabel.isHidden = value
         }
     }
     
@@ -27,9 +22,22 @@ class PhotoDetailController: UIViewController {
         super.viewDidLoad()
     }
     
+    func loadStylePhotoDetailView(title: String){
+        navigationController?.navigationBar.setTitleVerticalPositionAdjustment(0, for: .defaultPrompt)
+        navigationController?.title = title
+        navigationController?.navigationBar.tintColor = Stylesheet.shared.black
+//        titleLabel.textColor = Stylesheet.shared.black
+//        titleLabel.snp.removeConstraints()
+//        changeShapeSwitch.isHidden = true
+//        titleLabel.snp.makeConstraints { (make) in
+//            make.centerX.centerY.equalToSuperview()
+//        }
+        navigationController?.navigationBar.barTintColor = Stylesheet.shared.red
+    }
+    
     func setup(photo: PhotoDetailModelView) {
-        photoDetailView = PhotoDetailView(photo: photo)
         
+        photoDetailView.update(item: photo)
         view.addSubview(photoDetailView)
         
         photoDetailView.imageView.sd_setImage(with: URL(string: photo.item.url)!, placeholderImage: nil, options: .progressiveDownload, progress:

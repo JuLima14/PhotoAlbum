@@ -132,7 +132,4 @@ class CustomNavigationController: UINavigationController {
         }
         return vc
     }
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
 }

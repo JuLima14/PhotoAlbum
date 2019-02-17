@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  MainTabBarController.swift
 //  PhotoAlbum
 //
 //  Created by Julian Lima on 19/6/18.
@@ -21,11 +21,10 @@ class MainTabBarController: UITabBarController {
         let cvc = CollectionViewController()
         let lvc = ListViewController()
         
-        cvc.tabBarItem = MainTabBarItem(title: "collectionView", image: collectionIcon, tag: 1)
-        lvc.tabBarItem = MainTabBarItem(title: "listView", image: listIcon, tag: 2)
+        cvc.tabBarItem = UITabBarItem(title: "collectionView", image: collectionIcon, tag: 1)
+        lvc.tabBarItem = UITabBarItem(title: "listView", image: listIcon, tag: 2)
         
-        viewControllers = [cvc]
-//        viewControllers = [cvc,lvc]  
+        viewControllers = [lvc,cvc]  
     }
 
 }

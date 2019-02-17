@@ -9,8 +9,9 @@ import UIKit
 import SDWebImage
 
 enum Shape: String{
-    case Circle = "circle"
-    case Square = "square"
+    case Default
+    case Circle
+    case Square
 }
 class PhotoViewCell: UICollectionViewCell {
     
@@ -49,29 +50,26 @@ class PhotoViewCell: UICollectionViewCell {
     func update(with: Shape){
         UIView.animate(withDuration: 0.4) {
             switch with {
-            case .Square:
-                self.layer.cornerRadius = 5
-            case .Circle:
-                self.layer.cornerRadius = self.frame.width / 2
+                case .Square, .Default:
+                    self.layer.cornerRadius = 5
+                case .Circle:
+                    self.layer.cornerRadius = self.frame.width / 2
             }
         }
     }
     
-    func loadPhoto(photo: Photo,type: PhotoNames!, completionHandler: @escaping (UIImage)->()){
-        var selectedType: String!
-        if type == .thumbnailUrl{
-            selectedType = photo.thumbnailUrl
-        }else{
-            selectedType = photo.url
-        }
-        imageView.sd_setImage(with: URL(string: selectedType)!, placeholderImage: nil) { (fetchedImage, error, cacheType, url) in
+    func loadPhoto(photo: Photo,type: PhotoNames){
+        
+        let stringUrl = type == .thumbnailUrl ? photo.thumbnailUrl : photo.url
+        
+        imageView.sd_setImage(with: URL(string: stringUrl)!, placeholderImage: nil) { [weak self] (fetchedImage, error, cacheType, url) in
             if error != nil {
                 print("Error loading Image from URL: \(String(describing: url))\n\(String(describing: error?.localizedDescription))")
             }
-            self.imageView.image = fetchedImage!
-            completionHandler(fetchedImage!)
+            self?.imageView.image = fetchedImage!
         }
     }
+        
     override func prepareForReuse() {
         super.prepareForReuse()
     }

@@ -106,32 +106,28 @@ extension CollectionViewController : UICollectionViewDataSource{
     
     //indexPath starts in 0 and ids of photos starts in 1 so indexPath.item + 1
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellid", for: indexPath) as? PhotoViewCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellid", for: indexPath) as? PhotoViewCell,
+              let list = photosCollectionViewModel.items[indexPath.section+1]
             else{ return UICollectionViewCell() }
         
-        cell.update(with: .Square)
-        
-        guard let list = photosCollectionViewModel.items[indexPath.section+1]
-            else{ return cell }
-        
-        cell.loadPhoto(photo: list[indexPath.item],type: PhotoNames.thumbnailUrl, completionHandler: {_ in})
+        cell.update(with: .Default)
+        cell.loadPhoto(photo: list[indexPath.item],type: PhotoNames.thumbnailUrl)
         
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let pdc = PhotoDetailController()
-        present(pdc, animated: true) { [weak self] in
-            if let values = self?.photosCollectionViewModel.items[indexPath.section+1]{
-                pdc.setup(photo: PhotoDetailModelView(item: values[indexPath.item]))
-            }
+        if let values = photosCollectionViewModel.items[indexPath.section+1] {
+            pdc.update(item: PhotoDetailModelView(item: values[indexPath.item]))
         }
+        navigationController?.pushViewController(pdc, animated: true)
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         // Dequeue Reusable Supplementary View
         guard let supplementaryView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "header", for: indexPath) as? SectionHeader
-            else { fatalError("Unable to Dequeue Reusable Supplementary View") }
+            else { return UICollectionReusableView() }
         // Configure Supplementary View
         supplementaryView.setHeader(name: "Album \(indexPath.section+1)")
         supplementaryView.titleLabel.textColor = Stylesheet.shared.white
@@ -175,19 +171,19 @@ extension CollectionViewController: UIViewControllerPreviewingDelegate{
         }
         let pdc = PhotoDetailController()
         if let values = photosCollectionViewModel.items[indexPath.section+1]{
-            pdc.setup(photo: PhotoDetailModelView(item: values[indexPath.item]))
+            pdc.update(item: PhotoDetailModelView(item: values[indexPath.item]))
             pdc.prepareViewForPreviewing()
         }
         return pdc
     }
     
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
-        UIView.animate(withDuration: 0.5) {
+        UIView.animate(withDuration: 0.5) { [weak self] in
             viewControllerToCommit.view.layer.masksToBounds = false
             if viewControllerToCommit.isKind(of: PhotoDetailController.self){
                 (viewControllerToCommit as! PhotoDetailController).isHiddenDescriptionLabel = false
             }
-            CustomNavigationController.shared.pushViewController(viewControllerToCommit, animated: false)
+            self?.navigationController?.pushViewController(viewControllerToCommit, animated: false)
         }
     }
 }

@@ -20,6 +20,8 @@ class PhotoDetailController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setup()
+        setupConstraints()
     }
     
     func loadStylePhotoDetailView(title: String){
@@ -35,30 +37,18 @@ class PhotoDetailController: UIViewController {
         navigationController?.navigationBar.barTintColor = Stylesheet.shared.red
     }
     
-    func setup(photo: PhotoDetailModelView) {
-        
-        photoDetailView.update(item: photo)
+    func setup() {
         view.addSubview(photoDetailView)
-        
-        photoDetailView.imageView.sd_setImage(with: URL(string: photo.item.url)!, placeholderImage: nil, options: .progressiveDownload, progress:
-        { (receivedSize, expectedSize, targetURL) in
-            //set percentage load
-        }) { [weak self] (fetchedImage, error, cacheType, url) in
-            
-            if error != nil {
-                print("Error loading Image from URL: \(String(describing: url!))\n\(String(describing: error?.localizedDescription))")
-            }
-            
-            if url?.absoluteString == photo.item.url, let strongSelf = self {
-                strongSelf.photoDetailView.imageView.image = fetchedImage
-            }
-        }
     }
-    
+
     func setupConstraints() {
         photoDetailView.snp.makeConstraints { (make) in
             make.edges.equalToSuperview()
         }
+    }
+    
+    func update(item: Any) {
+        photoDetailView.update(item: item)
     }
     
     func prepareViewForPreviewing(){

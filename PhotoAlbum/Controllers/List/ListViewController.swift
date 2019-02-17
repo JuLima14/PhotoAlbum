@@ -35,8 +35,8 @@ class ListViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        self.navigationController?.hidesBarsOnSwipe = false
-        self.navigationController?.setNavigationBarHidden(false, animated: true)
+        navigationController?.hidesBarsOnSwipe = false
+        navigationController?.setNavigationBarHidden(false, animated: true)
 //        self.loadStyleNavigationBar(title: "List")
     }
     
@@ -80,14 +80,10 @@ class ListViewController: UIViewController {
 extension ListViewController: UIViewControllerPreviewingDelegate{
     
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
-        guard let indexCollection = photosListView.tableView.indexPathForRow(at: location) else {
-            return nil
-        }
+        guard let indexCollection = photosListView.tableView.indexPathForRow(at: location), let albumCell = photosListView.tableView.cellForRow(at: indexCollection) as? AlbumCell else { return nil }
         
-        guard let albumCell = photosListView.tableView.cellForRow(at: indexCollection) as? AlbumCell else {
-            return nil
-        }
         let locationCollection = photosListView.tableView.convert(location, to: albumCell.collectionView)
+        
         guard let indexItem = albumCell.collectionView.indexPathForItem(at: locationCollection) else {
             return nil
         }
@@ -95,7 +91,7 @@ extension ListViewController: UIViewControllerPreviewingDelegate{
         let indexPath = IndexPath(item: indexItem.item, section: indexCollection.section)
         let pdc = PhotoDetailController()
         if let values = photosListViewModel.items[indexPath.section+1]{
-            pdc.setup(photo: PhotoDetailModelView(item: values[indexPath.item]))
+            pdc.update(item: PhotoDetailModelView(item: values[indexPath.item]))
             pdc.prepareViewForPreviewing()
         }
         return pdc
@@ -106,7 +102,6 @@ extension ListViewController: UIViewControllerPreviewingDelegate{
             if viewControllerToCommit.isKind(of: PhotoDetailController.self){
                 (viewControllerToCommit as! PhotoDetailController).isHiddenDescriptionLabel = false
             }
-            
             self.navigationController?.pushViewController(viewControllerToCommit, animated: false)
             self.navigationController?.hidesBarsOnSwipe = false
             if (self.navigationController?.isNavigationBarHidden)! {
@@ -128,8 +123,9 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellid") as! AlbumCell
         cell.photosListViewModel = photosListViewModel
-        cell.sectionToShow = indexPath.section
+        cell.sectionToShow = indexPath.section + 1
         cell.collectionView.backgroundColor = Stylesheet.shared.darkGray
+        cell.delegate = self
         return cell
     }
     
@@ -150,6 +146,19 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource{
         return 40
     }
 
+}
+
+extension ListViewController: AlbumCellDelegate {
+    func collectionView(numberOfItemsInSection section: Int) -> Int {
+        return photosListViewModel.getTotalNumberInSection(section: section)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let list = photosListViewModel.items[indexPath.section] else { return }
+        let pdc = PhotoDetailController()
+        pdc.update(item: PhotoDetailModelView(item: list[indexPath.item]))
+        navigationController?.pushViewController(pdc, animated: true)
+    }
 }
 
 

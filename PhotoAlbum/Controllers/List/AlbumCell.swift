@@ -8,9 +8,14 @@
 
 import UIKit
 
+protocol AlbumCellDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)
+    func collectionView(numberOfItemsInSection section: Int) -> Int
+}
+
 class AlbumCell: UITableViewCell {
     
-    var collectionView: AsyncCollectionView = {
+    let collectionView: AsyncCollectionView = {
         let cellLayout = UICollectionViewFlowLayout()
         cellLayout.scrollDirection = .horizontal
         let view = AsyncCollectionView(frame: CGRect.zero, collectionViewLayout: cellLayout)
@@ -19,8 +24,10 @@ class AlbumCell: UITableViewCell {
         view.showsHorizontalScrollIndicator = false
         return view
     }()
-    var photosListViewModel: ListViewModel!
-    var sectionToShow: Int! = 0
+    
+    var photosListViewModel: ListViewModel?
+    var sectionToShow: Int = 0
+    var delegate: AlbumCellDelegate?
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -34,11 +41,8 @@ class AlbumCell: UITableViewCell {
         collectionView.delegate = self
         collectionView.dataSource = self
         
-        CustomNavigationController.shared.addSwitchDelegate(self.description, value: self)
-        
-        collectionView.reloadDataWithCompletion { [weak self] in
-            self?.collectionView.layoutIfNeeded()
-        }
+        collectionView.reloadData()
+
     }
     
     func setupConstraints() {
@@ -56,7 +60,7 @@ class AlbumCell: UITableViewCell {
 }
 extension AlbumCell: UISwitchDelegate{
     func switchStateChanged(value: Bool) {
-        photosListViewModel.shapeCell = value ? Shape.Circle : Shape.Square
+        photosListViewModel?.shapeCell = value ? Shape.Circle : Shape.Square
         collectionView.reloadData()
     }
 }
@@ -64,24 +68,23 @@ extension AlbumCell: UICollectionViewDataSource{
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return photosListViewModel.getTotalNumberInSection(section: section)
+        guard let numberOfItems = delegate?.collectionView(numberOfItemsInSection: section) else { return 0 }
+        return numberOfItems
     }
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellid", for: indexPath) as! PhotoViewCell
-        cell.update(with: photosListViewModel.shapeCell)
-        guard let list = photosListViewModel.items[self.sectionToShow+1]
-            else{ return cell }
-        cell.loadPhoto(photo: list[indexPath.item],type: PhotoNames.thumbnailUrl, completionHandler: {_ in})
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellid", for: indexPath) as? PhotoViewCell, let list = photosListViewModel?.items[sectionToShow + 1] else { return UICollectionViewCell() }
+        cell.update(with: photosListViewModel?.shapeCell ?? .Default)
+        cell.loadPhoto(photo: list[indexPath.item],type: .thumbnailUrl)
         return cell
     }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let list = self.photosListViewModel.items[self.sectionToShow+1]
-            else{ return }
-        let pdc = PhotoDetailController()
-        pdc.setup(photo: PhotoDetailModelView(item: list[indexPath.item]))
-        CustomNavigationController.shared.pushViewController(pdc, animated: true)
+        delegate?.collectionView(collectionView, didSelectItemAt: IndexPath(item: indexPath.item, section: sectionToShow ))
     }
+    
 }
 extension AlbumCell: UICollectionViewDelegateFlowLayout{
     

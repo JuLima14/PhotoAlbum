@@ -20,7 +20,7 @@ class AlbumCell: UITableViewCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        CustomNavigationController.shared.switchDelegate![description] = self
+        CustomNavigationController.shared.addSwitchDelegate(self.description, value: self)
         collectionView = {
             let cellLayout = UICollectionViewFlowLayout()
             cellLayout.scrollDirection = .horizontal
@@ -70,7 +70,7 @@ extension AlbumCell: UICollectionViewDataSource{
         guard let list = self.photosListViewModel.items[self.sectionToShow+1]
             else{ return }
         let pdc = PhotoDetailController()
-        pdc.setupView(photo: PhotoDetailModelView(item: list[indexPath.item]))
+        pdc.setup(photo: PhotoDetailModelView(item: list[indexPath.item]))
         CustomNavigationController.shared.pushViewController(pdc, animated: true)
     }
 }

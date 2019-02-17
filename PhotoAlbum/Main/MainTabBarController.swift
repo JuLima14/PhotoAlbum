@@ -24,9 +24,8 @@ class MainTabBarController: UITabBarController {
         cvc.tabBarItem = MainTabBarItem(title: "collectionView", image: collectionIcon, tag: 1)
         lvc.tabBarItem = MainTabBarItem(title: "listView", image: listIcon, tag: 2)
         
-        viewControllers = [cvc,lvc]
-        
-        
+        viewControllers = [cvc]
+//        viewControllers = [cvc,lvc]  
     }
 
 }

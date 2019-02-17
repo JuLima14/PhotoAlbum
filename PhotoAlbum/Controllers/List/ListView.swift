@@ -10,7 +10,12 @@ import UIKit
 
 class ListView: UIView{
     
-    var tableView: UITableView!
+    let tableView: AsyncTableView = {
+        let view = AsyncTableView(frame: CGRect.zero)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = Stylesheet.shared.white
+        return view
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -23,15 +28,9 @@ class ListView: UIView{
     
     private func setupPhotosCollectionView(){
         translatesAutoresizingMaskIntoConstraints = false
-        tableView = {
-            let view = UITableView(frame: CGRect.zero)
-            view.backgroundColor = Stylesheet.shared.white
-            return view
-        }()
         addSubview(tableView)
-        
         tableView.snp.makeConstraints { (make) in
-            make.top.left.right.bottom.equalToSuperview()
+            make.edges.equalToSuperview()
         }
     }
 }

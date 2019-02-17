@@ -15,13 +15,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = CustomNavigationController.shared
+        window?.rootViewController = UINavigationController(rootViewController: MainTabBarController())
         window?.makeKeyAndVisible()
-        
-        UIApplication.shared.statusBarStyle = .lightContent
-        UIApplication.shared.statusBarView?.backgroundColor = Stylesheet.shared.red
-        
         
         return true
     }

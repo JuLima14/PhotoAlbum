@@ -6,6 +6,7 @@
 //  Copyright © 2018 Julian Lima. All rights reserved.
 //
 import UIKit
+import SDWebImage
 
 class PhotoDetailController: UIViewController {
     
@@ -21,22 +22,37 @@ class PhotoDetailController: UIViewController {
             }
         }
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
     
-    func setupView(photo: PhotoDetailModelView!){
+    func setup(photo: PhotoDetailModelView) {
         photoDetailView = PhotoDetailView(photo: photo)
+        
         view.addSubview(photoDetailView)
-        photoDetailView.snp.makeConstraints { (make) in
-            make.left.right.top.bottom.equalToSuperview()
-        }
-        photoDetailView.imageView.sd_setImage(with: URL(string: photo.item.url!)!, placeholderImage: nil) { (fetchedImage, error, cacheType, url) in
+        
+        photoDetailView.imageView.sd_setImage(with: URL(string: photo.item.url)!, placeholderImage: nil, options: .progressiveDownload, progress:
+        { (receivedSize, expectedSize, targetURL) in
+            //set percentage load
+        }) { [weak self] (fetchedImage, error, cacheType, url) in
+            
             if error != nil {
                 print("Error loading Image from URL: \(String(describing: url!))\n\(String(describing: error?.localizedDescription))")
             }
+            
+            if url?.absoluteString == photo.item.url, let strongSelf = self {
+                strongSelf.photoDetailView.imageView.image = fetchedImage
+            }
         }
     }
+    
+    func setupConstraints() {
+        photoDetailView.snp.makeConstraints { (make) in
+            make.edges.equalToSuperview()
+        }
+    }
+    
     func prepareViewForPreviewing(){
         let diameter: CGFloat = view.frame.width
         preferredContentSize = CGSize(width: diameter, height: diameter)

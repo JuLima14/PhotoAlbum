@@ -17,15 +17,22 @@ class CustomNavigationController: UINavigationController {
     static let shared = CustomNavigationController()
     private var titleLabel: UILabel!
     private var changeShapeSwitch: UISwitch!
-    var switchDelegate: [String:UISwitchDelegate]!
+    var switchDelegate: [String:UISwitchDelegate] = [String:UISwitchDelegate]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         CustomNavigationController.shared.pushViewController(MainTabBarController(), animated: true)
         setupNav()
-        switchDelegate = [String:UISwitchDelegate]()
     }
 
+    func addSwitchDelegate(_ key: String, value : UISwitchDelegate){
+        self.switchDelegate[key] = value
+    }
+    
+    func removeSwitchDelegate(key: String){
+        self.switchDelegate[key] = nil
+    }
+    
     func setupNav(){
         titleLabel = {
             let label = UILabel(frame: CGRect.zero)
@@ -47,21 +54,18 @@ class CustomNavigationController: UINavigationController {
             make.right.equalToSuperview().inset(20)
         }
     }
+    
     @objc func handleSwitch(_ sender : UISwitch!){
-        if let keys = switchDelegate?.keys{
-            for key in keys{
-                if let delegate = switchDelegate{
-                    delegate[key]?.switchStateChanged(value: sender.isOn)
-                }
+            for key in self.switchDelegate.keys{
+                    self.switchDelegate[key]?.switchStateChanged(value: sender.isOn)
             }
-        }
         sender.onTintColor = Stylesheet.shared.darkGray
     }
+    
     func loadStyleCollectionView(title: String){
         titleLabel.text = title
         titleLabel.textColor = Stylesheet.shared.white
         titleLabel.snp.removeConstraints()
-        changeShapeSwitch.isHidden = true
         UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.8 , options: UIViewAnimationOptions.curveLinear, animations: {
             self.titleLabel.snp.remakeConstraints { (make) in
                 make.top.bottom.right.equalToSuperview()
@@ -104,16 +108,16 @@ class CustomNavigationController: UINavigationController {
         topViewController?.navigationController?.navigationBar.barTintColor = Stylesheet.shared.red
     }
     //this is coupling the behavior
-    override func pushViewController(_ viewController: UIViewController, animated: Bool) {
-        super.pushViewController(viewController, animated: animated)
-        if viewController.isKind(of: PhotoDetailController.self){
-            CustomNavigationController.shared.loadStylePhotoDetailView(title: "Photo Detail")
-            CustomNavigationController.shared.hidesBarsOnSwipe = false
-            if CustomNavigationController.shared.isNavigationBarHidden {
-                CustomNavigationController.shared.setNavigationBarHidden(false, animated: true)
-            }
-        }
-    }
+//    override func pushViewController(_ viewController: UIViewController, animated: Bool) {
+//        super.pushViewController(viewController, animated: animated)
+//        if viewController.isKind(of: PhotoDetailController.self){
+//            CustomNavigationController.shared.loadStylePhotoDetailView(title: "Photo Detail")
+//            CustomNavigationController.shared.hidesBarsOnSwipe = false
+//            if CustomNavigationController.shared.isNavigationBarHidden {
+//                CustomNavigationController.shared.setNavigationBarHidden(false, animated: true)
+//            }
+//        }
+//    }
     //this is coupling the behavior
     override func popViewController(animated: Bool) -> UIViewController? {
         super.popViewController(animated: true)

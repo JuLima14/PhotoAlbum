@@ -8,12 +8,12 @@
 
 import UIKit
 
-struct Photo {
-    var albumId: Int!
-    var id: Int!
-    var title: String!
-    var url: String!
-    var thumbnailUrl: String!
+struct Photo: Decodable {
+    let albumId: Int
+    let id: Int
+    let title: String
+    let url: String
+    let thumbnailUrl: String
 }
 
 enum PhotoNames : String{

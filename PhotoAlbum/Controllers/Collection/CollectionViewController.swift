@@ -10,56 +10,83 @@ import UIKit
 
 class CollectionViewController: UIViewController {
     
+    var photosCollectionView: CollectionView = {
+        let view = CollectionView(frame: CGRect.zero)
+        view.collectionView.register(PhotoViewCell.self, forCellWithReuseIdentifier: "cellid")
+        view.collectionView.register(SectionHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "header")
+        view.collectionView.backgroundColor = Stylesheet.shared.middleGray
+        return view
+    }()
     
-    var photosCollectionView: CollectionView!
-    var photosCollectionViewModel: CollectionViewModel!
-    var activityIndicator: UIActivityIndicatorView!
+    var photosCollectionViewModel = CollectionViewModel()
+    var activityIndicator = UIActivityIndicatorView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupView()
+        setup()
+        setupConstraints()
     }
     override func viewWillAppear(_ animated: Bool) {
         navigationController?.hidesBarsOnSwipe = true
-        CustomNavigationController.shared.loadStyleCollectionView(title: "Album")
+//        self.loadStyleNavigationBar(title: "Album")
     }
-
-    func setupView(){
-        CustomNavigationController.shared.navigationBar.isTranslucent = false
-        CustomNavigationController.shared.tabBarItem.badgeColor = Stylesheet.shared.red
-        activityIndicator = UIActivityIndicatorView()
+    func loadStyleNavigationBar(title: String){
+        navigationController?.navigationBar.pushItem(UINavigationItem(title: title), animated: true)
+        navigationController?.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIView())
+        navigationController?.navigationBar.barTintColor = Stylesheet.shared.red
+        navigationController?.navigationBar.isTranslucent = false
+    }
+    func setup(){
+        view.backgroundColor = Stylesheet.shared.middleGray
+        
+        photosCollectionView.collectionView.dataSource = self
+        photosCollectionView.collectionView.delegate = self
+        
         activityIndicator.hidesWhenStopped = true
         activityIndicator.activityIndicatorViewStyle = .gray
-        photosCollectionView = {
-            let view = CollectionView(frame: CGRect.zero)
-            view.collectionView.dataSource = self
-            view.collectionView.delegate = self
-            view.collectionView.register(PhotoViewCell.self, forCellWithReuseIdentifier: "cellid")
-            view.collectionView.register(SectionHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "header")
-            view.collectionView.backgroundColor = Stylesheet.shared.middleGray
-            return view
-        }()
-        photosCollectionViewModel = CollectionViewModel()
         
         view.addSubview(photosCollectionView)
         view.addSubview(activityIndicator)
        
         registerForPreviewing(with: self, sourceView: photosCollectionView.collectionView)
         
+        activityIndicator.startAnimating()
+        
+        photosCollectionViewModel.loadPhotos { [weak self] (error) in
+            
+            guard let strongSelf = self else { return }
+            
+            if !error{
+                strongSelf.photosCollectionViewModel.items.removeAll()
+                strongSelf.photosCollectionViewModel.items = APIHelper.shared.items
+                strongSelf.photosCollectionView.collectionView.reloadData()
+                strongSelf.activityIndicator.stopAnimating()
+            }
+        }
+    }
+    
+    func setupConstraints() {
         photosCollectionView.snp.makeConstraints { (make) in
-            make.top.left.right.bottom.equalToSuperview()
+            make.edges.equalToSuperview()
         }
         activityIndicator.snp.makeConstraints { (make) in
             make.center.equalToSuperview()
         }
-        activityIndicator.startAnimating()
-        photosCollectionViewModel.loadPhotos { (error) in
-            if !error{
-                self.photosCollectionViewModel.items.removeAll()
-                self.photosCollectionViewModel.items = APIHelper.shared.items
-                self.photosCollectionView.collectionView.reloadData()
-            }
-            self.activityIndicator.stopAnimating()
+    }
+}
+extension CollectionViewController : UISwitchDelegate{
+    func switchStateChanged(value: Bool) {
+        if value{
+            self.photosCollectionViewModel.quantityOfColumns = 1
+        }else{
+            self.photosCollectionViewModel.quantityOfColumns = 2
+        }
+        UIView.animate(withDuration: 1) {
+            let layout = UICollectionViewFlowLayout()
+            let quantity: CGFloat = self.photosCollectionViewModel.quantityOfColumns
+            let width = self.photosCollectionView.bounds.width / quantity - 15
+            layout.itemSize = CGSize(width: width, height: width)
+            self.photosCollectionView.collectionView.setCollectionViewLayout(layout, animated: true)
         }
     }
 }
@@ -85,13 +112,15 @@ extension CollectionViewController : UICollectionViewDataSource{
         
         return cell
     }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let pdc = PhotoDetailController()
         if let values = self.photosCollectionViewModel.items[indexPath.section+1]{
-            pdc.setupView(photo: PhotoDetailModelView(item: values[indexPath.item]))
+            pdc.setup(photo: PhotoDetailModelView(item: values[indexPath.item]))
         }
         CustomNavigationController.shared.pushViewController(pdc, animated: true)
     }
+    
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         // Dequeue Reusable Supplementary View
         guard let supplementaryView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "header", for: indexPath) as? SectionHeader
@@ -119,7 +148,8 @@ extension CollectionViewController:  UICollectionViewDelegateFlowLayout{
         return UIEdgeInsetsMake(0, 10, 10, 10)
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = photosCollectionView.bounds.width / 2 - 15
+        let quantity: CGFloat = self.photosCollectionViewModel.quantityOfColumns
+        let width = self.photosCollectionView.bounds.width / quantity - 15
         return CGSize(width: width, height: width)
     }
     
@@ -133,7 +163,7 @@ extension CollectionViewController: UIViewControllerPreviewingDelegate{
         }
         let pdc = PhotoDetailController()
         if let values = photosCollectionViewModel.items[indexPath.section+1]{
-            pdc.setupView(photo: PhotoDetailModelView(item: values[indexPath.item]))
+            pdc.setup(photo: PhotoDetailModelView(item: values[indexPath.item]))
             pdc.prepareViewForPreviewing()
         }
         return pdc

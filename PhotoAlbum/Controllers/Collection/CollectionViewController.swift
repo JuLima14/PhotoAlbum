@@ -103,7 +103,7 @@ extension CollectionViewController : UICollectionViewDataSource{
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellid", for: indexPath) as? PhotoViewCell
             else{ return UICollectionViewCell() }
         
-        cell.setupCell(with: .Square)
+        cell.update(with: .Square)
         
         guard let list = photosCollectionViewModel.items[indexPath.section+1]
             else{ return cell }

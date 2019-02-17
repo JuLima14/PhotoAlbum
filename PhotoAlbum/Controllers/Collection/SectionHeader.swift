@@ -10,7 +10,7 @@ import UIKit
 
 class SectionHeader: UICollectionReusableView {
     
-    var titleLabel: UILabel = {
+    let titleLabel: UILabel = {
         let view = UILabel(frame: .zero)
         view.textAlignment = .left
         view.font = UIFont.boldSystemFont(ofSize: 30)

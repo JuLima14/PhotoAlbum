@@ -18,6 +18,7 @@
 		3792682220DB5F2C000FFC5C /* PhotoDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3792682120DB5F2C000FFC5C /* PhotoDetailController.swift */; };
 		3792682420DB5F5A000FFC5C /* PhotoDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3792682320DB5F5A000FFC5C /* PhotoDetailView.swift */; };
 		37ED24032218E45B000ABF9C /* AsyncTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ED24022218E45B000ABF9C /* AsyncTableView.swift */; };
+		37ED24052218EFFA000ABF9C /* AsyncCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ED24042218EFFA000ABF9C /* AsyncCollectionView.swift */; };
 		37EF42AC20DFDD07000D17DB /* StickyHeadersCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37EF42AB20DFDD07000D17DB /* StickyHeadersCollectionViewFlowLayout.swift */; };
 		37EF42AE20DFDE25000D17DB /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37EF42AD20DFDE25000D17DB /* SectionHeader.swift */; };
 		37EF42B020E06BF4000D17DB /* ListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37EF42AF20E06BF4000D17DB /* ListViewModel.swift */; };
@@ -61,6 +62,7 @@
 		3792683220DB6237000FFC5C /* Roboto-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Italic.ttf"; sourceTree = "<group>"; };
 		3792683320DB6237000FFC5C /* Roboto-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Regular.ttf"; sourceTree = "<group>"; };
 		37ED24022218E45B000ABF9C /* AsyncTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncTableView.swift; sourceTree = "<group>"; };
+		37ED24042218EFFA000ABF9C /* AsyncCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncCollectionView.swift; sourceTree = "<group>"; };
 		37EF42AB20DFDD07000D17DB /* StickyHeadersCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyHeadersCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		37EF42AD20DFDE25000D17DB /* SectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
 		37EF42AF20E06BF4000D17DB /* ListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewModel.swift; sourceTree = "<group>"; };
@@ -255,6 +257,7 @@
 				37F3077C20D9FEDC001D06DC /* PhotoViewCell.swift */,
 				37EF42AB20DFDD07000D17DB /* StickyHeadersCollectionViewFlowLayout.swift */,
 				37EF42AD20DFDE25000D17DB /* SectionHeader.swift */,
+				37ED24042218EFFA000ABF9C /* AsyncCollectionView.swift */,
 			);
 			path = Collection;
 			sourceTree = "<group>";
@@ -394,6 +397,7 @@
 				3792681520DAFF56000FFC5C /* Photo.swift in Sources */,
 				3792681120DA1190000FFC5C /* ListViewController.swift in Sources */,
 				37EF42AE20DFDE25000D17DB /* SectionHeader.swift in Sources */,
+				37ED24052218EFFA000ABF9C /* AsyncCollectionView.swift in Sources */,
 				3792682420DB5F5A000FFC5C /* PhotoDetailView.swift in Sources */,
 				3792681D20DB200D000FFC5C /* Extensions.swift in Sources */,
 				37F3076120D9EFA8001D06DC /* MainTabBarController.swift in Sources */,

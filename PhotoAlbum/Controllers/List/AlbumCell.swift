@@ -10,34 +10,43 @@ import UIKit
 
 class AlbumCell: UITableViewCell {
     
-    var collectionView: UICollectionView!
+    var collectionView: AsyncCollectionView = {
+        let cellLayout = UICollectionViewFlowLayout()
+        cellLayout.scrollDirection = .horizontal
+        let view = AsyncCollectionView(frame: CGRect.zero, collectionViewLayout: cellLayout)
+        view.register(PhotoViewCell.self, forCellWithReuseIdentifier: "cellid")
+        view.backgroundColor = Stylesheet.shared.white
+        view.showsHorizontalScrollIndicator = false
+        return view
+    }()
     var photosListViewModel: ListViewModel!
     var sectionToShow: Int! = 0
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        CustomNavigationController.shared.addSwitchDelegate(self.description, value: self)
-        collectionView = {
-            let cellLayout = UICollectionViewFlowLayout()
-            cellLayout.scrollDirection = .horizontal
-            let view = UICollectionView(frame: CGRect.zero, collectionViewLayout: cellLayout)
-            view.register(PhotoViewCell.self, forCellWithReuseIdentifier: "cellid")
-            view.backgroundColor = Stylesheet.shared.white
-            view.showsHorizontalScrollIndicator = false
-            view.delegate = self
-            view.dataSource = self
-            return view
-        }()
-        addSubview(collectionView)
-        collectionView.snp.makeConstraints { (make) in
-            make.top.bottom.left.right.equalToSuperview()
-        }
-        collectionView.reloadData()
+        setup()
+        setupConstraints()
     }
+    
+    func setup() {
+        addSubview(collectionView)
+        
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        
+        CustomNavigationController.shared.addSwitchDelegate(self.description, value: self)
+        
+        collectionView.reloadDataWithCompletion { [weak self] in
+            self?.collectionView.layoutIfNeeded()
+        }
+    }
+    
+    func setupConstraints() {
+        collectionView.snp.makeConstraints { (make) in
+            make.edges.equalToSuperview()
+        }
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -60,7 +69,7 @@ extension AlbumCell: UICollectionViewDataSource{
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellid", for: indexPath) as! PhotoViewCell
-        cell.setupCell(with: photosListViewModel.shapeCell)
+        cell.update(with: photosListViewModel.shapeCell)
         guard let list = photosListViewModel.items[self.sectionToShow+1]
             else{ return cell }
         cell.loadPhoto(photo: list[indexPath.item],type: PhotoNames.thumbnailUrl, completionHandler: {_ in})

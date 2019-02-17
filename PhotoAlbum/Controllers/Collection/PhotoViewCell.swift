@@ -14,11 +14,39 @@ enum Shape: String{
 }
 class PhotoViewCell: UICollectionViewCell {
     
-    var imageView: UIImageView!
+    let imageView: UIImageView = {
+        let view = UIImageView(frame: CGRect.zero)
+        view.isUserInteractionEnabled = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.contentMode = .scaleAspectFill
+        return view
+    }()
     
-    func setupCell(with: Shape){
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        setup()
+        setupConstraints()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setup() {
         backgroundColor = Stylesheet.shared.middleGray
         layer.masksToBounds = true
+        addSubview(imageView)
+    }
+    
+    func setupConstraints() {
+        imageView.snp.makeConstraints { (make) in
+            make.edges.equalToSuperview()
+        }
+    }
+    
+    func update(with: Shape){
         UIView.animate(withDuration: 0.4) {
             switch with {
             case .Square:
@@ -26,17 +54,6 @@ class PhotoViewCell: UICollectionViewCell {
             case .Circle:
                 self.layer.cornerRadius = self.frame.width / 2
             }
-        }
-        imageView = {
-            let view = UIImageView(frame: CGRect.zero)
-            view.isUserInteractionEnabled = true
-            view.translatesAutoresizingMaskIntoConstraints = false
-            view.contentMode = .scaleAspectFill
-            return view
-        }()
-        addSubview(imageView)
-        imageView.snp.makeConstraints { (make) in
-            make.right.left.top.bottom.equalToSuperview()
         }
     }
     

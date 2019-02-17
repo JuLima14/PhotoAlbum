@@ -88,7 +88,7 @@ extension ListViewController: UIViewControllerPreviewingDelegate{
             return nil
         }
         let locationCollection = photosListView.tableView.convert(location, to: albumCell.collectionView)
-        guard let indexItem = albumCell.collectionView?.indexPathForItem(at: locationCollection) else {
+        guard let indexItem = albumCell.collectionView.indexPathForItem(at: locationCollection) else {
             return nil
         }
         
